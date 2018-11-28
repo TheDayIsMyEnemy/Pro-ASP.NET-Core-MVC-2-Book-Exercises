@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ConfiguringApps.Infrastructure;
+﻿using ConfiguringApps.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +18,15 @@ namespace ConfiguringApps
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<UptimeService>();
+            services.AddMvc().AddMvcOptions(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+            });
+        }
+
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            services.AddSingleton<UptimeService>();
             services.AddMvc();
         }
 
@@ -34,21 +38,7 @@ namespace ConfiguringApps
                 app.UseMiddleware<ShortCircuitMiddleware>();
             }
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseStatusCodePages();
-
-                //app.UseMiddleware<ErrorMiddleware>();
-                //app.UseMiddleware<BrowserTypeMiddleware>();
-                //app.UseMiddleware<ShortCircuitMiddleware>();
-                //app.UseMiddleware<ContentMiddleware>();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
+            app.UseExceptionHandler("/Home/Error");
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -57,6 +47,14 @@ namespace ConfiguringApps
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public void ConfigureDevelopment(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseStatusCodePages();
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }
