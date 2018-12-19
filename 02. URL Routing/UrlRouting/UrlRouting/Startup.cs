@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.DependencyInjection;
+using UrlRouting.Infrastructure;
 
 namespace UrlRouting
 {
@@ -10,9 +11,14 @@ namespace UrlRouting
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            //Defining an Inline Custom Constraint
             services.Configure<RouteOptions>(options =>
-                options.ConstraintMap.Add("weekday", typeof(WeekDayConstraint)));
+            {
+                //Defining an Inline Custom Constraint
+                options.ConstraintMap.Add("weekday", typeof(WeekDayConstraint));
+
+                options.LowercaseUrls = true;
+                options.AppendTrailingSlash = true;
+            });
 
             services.AddMvc();
         }
@@ -24,12 +30,24 @@ namespace UrlRouting
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
+                routes.Routes.Add(new LegacyRoute(
+                            app.ApplicationServices,
+                            "/articles/Windows_3.1_Overview.html",
+                            "/old/.NET_1.0_Class_Library"));
+
                 // Default route config by MVC
                 routes.MapRoute(
-                    name: "MyRoute",
+                    name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
 
+                routes.MapRoute(
+                     name: "out",
+                     template: "outbound/{controller=Home}/{action=Index}");
 
+                //routes.MapRoute(
+                //    name: "NewRoute",
+                //    template: "App/Do{action}",
+                //    defaults: new { controller = "Home" });
 
                 //Custom constraint
                 //inline
