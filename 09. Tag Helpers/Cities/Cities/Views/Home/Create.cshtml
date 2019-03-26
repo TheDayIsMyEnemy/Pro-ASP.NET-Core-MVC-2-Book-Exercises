@@ -1,28 +1,29 @@
-﻿@model Cities.Models.City
+﻿@model City
 
 @{
-    Layout = "_Layout"; 
+    Layout = "_Layout";
 }
 
-<form method="post">
+<form method="post" asp-action="Create" asp-controller="Home">
     <div class="form-group">
-        <label helper-for="Name" />
-        <input helper-for="Name" />
-    </div>
-    <div class="form-group">
-        <label helper-for="Country" />
-        <input helper-for="Country" />
+        <label asp-for="Name"></label>
+        <input class="form-control" asp-for="Name" />
     </div>
     <div class="form-group">
-        <label helper-for="Population" />
-        <input helper-for="Population" />
+        <label asp-for="Country"></label>
+        @*<select class="form-control" asp-for="Country" asp-items="@new SelectList(Enum.GetNames(typeof(CountryNames)))"></select>*@
+        <select class="form-control" model-for="Country">
+            <option disabled selected value="">Select a Country</option>
+        </select>
     </div>
-    @*<formbutton type="submit" bg-color="danger" />
-        <formbutton type="reset" />
-        <a bs-button-color="primary" href="/Home/Index">Cancel</a>*@
-    <div theme="primary">
-        <button type="submit">Add</button>
-        <button type="reset">Reset</button>
-        <a href="/Home/Index">Cancel</a>
+    <div class="form-group">
+        <label asp-for="Population"></label>
+        <input class="form-control" asp-for="Population" @*asp-format="{0:#,###}" *@ />
     </div>
+    <div class="form-group">
+        <label asp-for="Notes"></label>
+        <textarea class="form-control" asp-for="Notes"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a class="btn btn-primary" href="/Home/Index">Cancel</a>
 </form>

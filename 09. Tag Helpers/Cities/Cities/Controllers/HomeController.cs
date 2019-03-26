@@ -20,7 +20,10 @@ namespace Cities.Controllers
 
         public ViewResult Create() => View();
 
+        public ViewResult Edit() => View("Create", repository.Cities.First());
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(City city)
         {
             repository.AddCity(city);
